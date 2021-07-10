@@ -4,6 +4,8 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 const hotelsRoutes = require("./routes/hotels");
 
 const ExpressError = require("./utils/ExpressError");
@@ -26,6 +28,8 @@ mongoose.connect(dbUrl, {
 
 const app = express();
 
+app.use(cors());
+
 app.use(express.json());
 
 app.use("/api/hotels", hotelsRoutes);
@@ -36,7 +40,7 @@ app.all("*", (req, res, next) => {
 
 app.use((error, req, res, next) => {
   const { status = 500, message = "Something went wrong" } = error;
-  res.status(status).send({ message });
+  res.status(status).json({ message });
 });
 
 const port = process.env.PORT || 5000;
