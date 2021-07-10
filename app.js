@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require("express");
 const mongoose = require("mongoose");
+const hotelsRoutes = require("./routes/hotels");
 
 const ExpressError = require("./utils/ExpressError");
 
@@ -27,16 +28,14 @@ const app = express();
 
 app.use(express.json());
 
-app.get("/api/hotels", (req, res) => {
-  res.status(200).json({ test: "asdfasf" });
-});
+app.use("/api/hotels", hotelsRoutes);
 
 app.all("*", (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });
 
 app.use((error, req, res, next) => {
-  const { status = 500, message = "Something went wrong." } = error;
+  const { status = 500, message = "Something went wrong" } = error;
   res.status(status).send({ message });
 });
 
