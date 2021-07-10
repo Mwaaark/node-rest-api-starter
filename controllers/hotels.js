@@ -19,12 +19,17 @@ module.exports.index = async (req, res, next) => {
     return next(err);
   }
 
-  res.status(200).json({ hotels });
+  res
+    .status(200)
+    .json({ hotels: hotels.map((hotel) => hotel.toObject({ getters: true })) });
 };
 
 module.exports.createHotel = async (req, res, next) => {
+  const { name, description } = req.body;
+
   const hotel = new Hotel({
-    name: "Test",
+    name,
+    description,
   });
 
   try {
@@ -58,18 +63,19 @@ module.exports.showHotel = async (req, res, next) => {
     return next(err);
   }
 
-  res.status(200).json({ hotel });
+  res.status(200).json({ hotel: hotel.toObject({ getters: true }) });
 };
 
 module.exports.updateHotel = async (req, res, next) => {
+  const { name, description } = req.body;
+
   let hotel;
-  const name = "Test edited";
 
   try {
     hotel = await Hotel.findById(req.params.id);
   } catch (error) {
     const err = new ExpressError(
-      "Something went wrong, could not update data",
+      "Something went wrong, could not find data",
       500
     );
     return next(err);
@@ -84,6 +90,7 @@ module.exports.updateHotel = async (req, res, next) => {
   }
 
   hotel.name = name;
+  hotel.description = description;
 
   try {
     await hotel.save();
@@ -95,7 +102,7 @@ module.exports.updateHotel = async (req, res, next) => {
     return next(err);
   }
 
-  res.status(200).json({ hotel });
+  res.status(200).json({ hotel: hotel.toObject({ getters: true }) });
 };
 
 module.exports.deleteHotel = async (req, res, next) => {
@@ -119,5 +126,5 @@ module.exports.deleteHotel = async (req, res, next) => {
     return next(err);
   }
 
-  res.status(200).json({ hotel, message: "Hotel successfully deleted" });
+  res.status(200).json({ message: "Hotel successfully deleted" });
 };
